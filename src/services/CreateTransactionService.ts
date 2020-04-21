@@ -22,7 +22,7 @@ class CreateTransactionService {
     category,
   }: Request): Promise<Transaction> {
     const transactionsRepository = getCustomRepository(TransactionsRepository);
-    const categoryRepository = getRepository(Category);
+    const categoriesRepository = getRepository(Category);
 
     if (!Object.values(TransactionType).includes(type))
       throw new AppError('Tipo de operação inválido!');
@@ -32,18 +32,18 @@ class CreateTransactionService {
     if (type === 'outcome' && value > total)
       throw new AppError('Saldo insuficiente!');
 
-    let categoryDB = await categoryRepository.findOne({
+    let categoryDB = await categoriesRepository.findOne({
       where: {
         title: category,
       },
     });
 
     if (!categoryDB) {
-      categoryDB = categoryRepository.create({
+      categoryDB = categoriesRepository.create({
         title: category,
       });
 
-      await categoryRepository.save(categoryDB);
+      await categoriesRepository.save(categoryDB);
     }
 
     const transaction = transactionsRepository.create({
